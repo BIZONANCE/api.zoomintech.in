@@ -14,7 +14,6 @@ import contactRoutes from "./routes/contact.routes";
 import blogRoutes from "./routes/blog.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
 import heroRoutes from "./routes/hero.routes";
-
 import adminServiceRoutes from "./routes/adminService.routes";
 import adminCategoryRoutes from "./routes/adminCategory.routes";
 import adminReviewRoutes from "./routes/adminReview.routes";
@@ -25,42 +24,43 @@ import notificationRoutes from "./routes/notification.routes";
 import adminAuthRoutes from "./routes/adminAuth.routes";
 import adminHeroRoutes from "./routes/adminHero.routes";
 
-/* =========================
-   APP INITIALIZATION
-========================= */
 const app = express();
 
 /* =========================
-   MIDDLEWARE
+   CORS CONFIGURATION
 ========================= */
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://zoomintech.in",
+  "https://www.zoomintech.in",
+  "https://admin.zoomintech.in"
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 /* =========================
    MIDDLEWARE
 ========================= */
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "http://localhost:3001",  // your dashboard port
-    "https://zoomintech.in",
-    "https://admin.zoomintech.in", 
-    "https://api.zoomintech.in", // your dashboard domain
-    "https://www.zoomintech.in",
-  ],
-  credentials: true,
-}));
-
-// 🔥 IMPORTANT FOR BASE64 IMAGES
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 /* =========================
    STATIC FILE SERVING
-   This makes uploaded images visible
-   http://localhost:5000/uploads/filename.jpg
 ========================= */
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "../uploads"))
-);
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 /* =========================
    PUBLIC ROUTES
@@ -74,6 +74,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/hero", heroRoutes);
+
 /* =========================
    ADMIN ROUTES
 ========================= */
@@ -86,9 +87,7 @@ app.use("/api/admin/support", adminSupportRoutes);
 app.use("/api/admin/notifications", notificationRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin/hero", adminHeroRoutes);
-/* =========================
-   DEFAULT ROUTE
-========================= */
+
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
