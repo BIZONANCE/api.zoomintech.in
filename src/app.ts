@@ -40,6 +40,10 @@ app.use(cors({
   origin: [
     "http://localhost:3000",
     "http://localhost:3001",  // your dashboard port
+    "https://zoomintech.in",
+    "https://admin.zoomintech.in", 
+    "https://api.zoomintech.in", // your dashboard domain
+    "https://www.zoomintech.in",
   ],
   credentials: true,
 }));
